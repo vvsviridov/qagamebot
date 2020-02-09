@@ -1,12 +1,15 @@
 import os
 import telebot
-import time
 from telebot import types
 from text import questions, answers
 from random import shuffle
+from flask import Flask, request
 
-TELEGRAM_TOKEN = os.environ['TOKEN']
-bot = telebot.TeleBot(TELEGRAM_TOKEN)
+
+TOKEN = os.environ['TOKEN']
+bot = telebot.TeleBot(TOKEN)
+server = Flask(__name__)
+
 shuffle(answers)
 shuffle(questions)
 
@@ -37,14 +40,20 @@ def answer_text(inline_query):
         print(e)
 
 
-def main_loop():
-    bot.polling(True)
-    while 1:
-        time.sleep(3)
+@server.route('/' + TOKEN, methods=['POST'])
+def getMessage():
+    bot.process_new_updates(
+        [types.Update.de_json(request.stream.read().decode("utf-8"))]
+    )
+    return "!", 200
 
 
-if __name__ == '__main__':
-    try:
-        main_loop()
-    except KeyboardInterrupt:
-        print('\nExiting by user request.\n')
+@server.route("/")
+def webhook():
+    bot.remove_webhook()
+    bot.set_webhook(url='https://qagame-telegram.heroku.com/' + TOKEN)
+    return "!", 200
+
+
+if __name__ == "__main__":
+    server.run(host="0.0.0.0", port=int(os.environ.get('PORT', 5000)))

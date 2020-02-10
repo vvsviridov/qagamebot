@@ -10,39 +10,41 @@ TOKEN = os.environ['TOKEN']
 bot = telebot.TeleBot(TOKEN)
 server = Flask(__name__)
 
-shuffle(answers)
-shuffle(questions)
+
+query_answers = []
+query_questions = []
+
+
+def shuffle_answers():
+    shuffle(answers)
+    return answers.copy()
+
+
+def shuffle_questions():
+    shuffle(questions)
+    return questions.copy()
 
 
 @bot.inline_handler(lambda query: query.query.lower() == '')
 def question_text(inline_query):
     try:
+        if len(query_questions) == 0:
+            query_questions = shuffle_questions()
+        if len(query_answers) == 0:
+            query_answers = shuffle_answers()
         resp1 = types.InlineQueryResultArticle(
             '1',
-            'Вопрос',
-            types.InputTextMessageContent(questions.pop())
+            'Спросить',
+            types.InputTextMessageContent(query_questions.pop())
         )
         resp2 = types.InlineQueryResultArticle(
             '2',
-            'Ответ',
-            types.InputTextMessageContent(answers.pop())
+            'Ответить',
+            types.InputTextMessageContent(query_answers.pop())
         )
         bot.answer_inline_query(inline_query.id, [resp1, resp2], cache_time=0)
     except Exception as e:
         print(e)
-
-
-# @bot.inline_handler(lambda query: query.query.lower() == 'ответ')
-# def answer_text(inline_query):
-#     try:
-#         resp = types.InlineQueryResultArticle(
-#             '1',
-#             'Ответ',
-#             types.InputTextMessageContent(answers.pop())
-#         )
-#         bot.answer_inline_query(inline_query.id, [resp], cache_time=0)
-#     except Exception as e:
-#         print(e)
 
 
 @server.route('/' + TOKEN, methods=['POST'])

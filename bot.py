@@ -14,30 +14,35 @@ shuffle(answers)
 shuffle(questions)
 
 
-@bot.inline_handler(lambda query: query.query.lower() == 'вопрос')
+@bot.inline_handler(lambda query: query.query.lower() == '')
 def question_text(inline_query):
     try:
-        resp = types.InlineQueryResultArticle(
+        resp1 = types.InlineQueryResultArticle(
             '1',
             'Вопрос',
             types.InputTextMessageContent(questions.pop())
         )
-        bot.answer_inline_query(inline_query.id, [resp], cache_time=0)
-    except Exception as e:
-        print(e)
-
-
-@bot.inline_handler(lambda query: query.query.lower() == 'ответ')
-def answer_text(inline_query):
-    try:
-        resp = types.InlineQueryResultArticle(
-            '1',
+        resp2 = types.InlineQueryResultArticle(
+            '2',
             'Ответ',
             types.InputTextMessageContent(answers.pop())
         )
-        bot.answer_inline_query(inline_query.id, [resp], cache_time=0)
+        bot.answer_inline_query(inline_query.id, [resp1, resp2], cache_time=0)
     except Exception as e:
         print(e)
+
+
+# @bot.inline_handler(lambda query: query.query.lower() == 'ответ')
+# def answer_text(inline_query):
+#     try:
+#         resp = types.InlineQueryResultArticle(
+#             '1',
+#             'Ответ',
+#             types.InputTextMessageContent(answers.pop())
+#         )
+#         bot.answer_inline_query(inline_query.id, [resp], cache_time=0)
+#     except Exception as e:
+#         print(e)
 
 
 @server.route('/' + TOKEN, methods=['POST'])

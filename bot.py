@@ -27,6 +27,8 @@ def shuffle_questions():
 
 @bot.inline_handler(lambda query: query.query.lower() == '')
 def question_text(inline_query):
+    global query_questions
+    global query_answers
     try:
         if len(query_questions) == 0:
             query_questions = shuffle_questions()

@@ -2,7 +2,7 @@ import os
 import telebot
 from telebot import types
 from text import questions, answers
-from random import shuffle
+from random import shuffle, randrange
 from flask import Flask, request
 
 
@@ -13,6 +13,7 @@ app = Flask(__name__)
 
 query_answers = []
 query_questions = []
+emodji = "😀😅🥰😛😝🤪😜😎😊😇😂😄😆😔😍"
 
 
 def shuffle_answers():
@@ -42,7 +43,9 @@ def question_text(inline_query):
         resp2 = types.InlineQueryResultArticle(
             '2',
             'Ответить',
-            types.InputTextMessageContent(query_answers.pop())
+            types.InputTextMessageContent(
+                query_answers.pop() + emodji[randrange(len(emodji))]
+            )
         )
         bot.answer_inline_query(inline_query.id, [resp1, resp2], cache_time=0)
     except Exception as e:
